@@ -36,6 +36,16 @@ router.post('/', async (req, res) => {
     const outputFile = path.join(outputDir, `${parsedFileName}`);
     const writeStream = fs.createWriteStream(outputFile);
 
+    writeStream.on('error', (error) => {
+        console.error('Błąd podczas zapisu:', error);
+        res.status(500).send('Błąd podczas scalania plików.');
+    });
+
+    writeStream.on('finish', () => {
+        console.log('Scalanie plików zakończone.');
+        res.status(200).send(`Pliki zostały pomyślnie scalone w ${parsedFileName}`);
+    });
+
     // Łączenie fragmentów
     files.forEach(file => {
         const filePath = path.join(chunksDir, file);
@@ -48,11 +58,7 @@ router.post('/', async (req, res) => {
         writeStream.write(chunk);
     });
 
-    // Zakończenie zapisu
-    writeStream.end(() => {
-        console.log('Scalanie plików zakończone.');
-    });
-
+    writeStream.end();
 });
 
 module.exports = router;
