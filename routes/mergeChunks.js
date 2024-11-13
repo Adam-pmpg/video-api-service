@@ -5,7 +5,7 @@ const path = require('path');
 const router = express.Router();
 
 // Endpoint do scalania plików wideo
-router.get('/', async (req, res) => {
+router.post('/', async (req, res) => {
     const chunksDir = path.join(__dirname, '../chunks');
     const outputDir = path.join(__dirname, '../output');
 
