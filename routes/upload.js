@@ -14,37 +14,35 @@ const upload = multer({
 router.post('/', upload.single('file'), (req, res) => {
     const { chunkIndex, totalChunks } = req.body;
     const file = req.file ? req.file : null;
-    const { originalname, size } = file ? file : 'brak nazwy video';
+    const { originalname, size } = file ? file : 'brak video';
 
-    console.log('originalname: ', originalname);
-    console.log('Dane:', req.body);
-    console.log("Plik:", file);
+    console.log({
+        originalname,
+        "dane": req.body,
+        "plik:": file,
+    })
 
-    //
     const chunksDir = path.join(__dirname, '../chunks');
     if (!fs.existsSync(chunksDir)) {
         fs.mkdirSync(chunksDir); // Tworzy folder, jeśli nie istnieje
     }
-
     const chunkPath = path.join(chunksDir, `chunk_${chunkIndex}__${originalname}`);
     // Zapis fragmentu na dysku
     fs.writeFile(chunkPath, file.buffer, (err) => {
         if (err) {
             console.error('Błąd podczas zapisywania fragmentu:', err);
-            return res.status(500).send('Błąd podczas zapisywania fragmentu.');
-        }
 
+            return res.status(500).json({ error: 'Błąd podczas zapisywania fragmentu.' });
+        }
         console.log(`Fragment ${chunkIndex} zapisany.`);
 
-        // Sprawdź, czy wszystkie fragmenty zostały przesłane
-        if (Number(chunkIndex) + 1 === Number(totalChunks)) {
-            console.log("Wszystkie fragmenty zostały przesłane!");
-        }
-
-        res.status(200).send(`<h1>Upload fragmentu ${chunkIndex} / ${totalChunks}</h1><p>Plik: ${file.originalname}</p>`);
+        res.status(200).json({
+            chunkIndex: chunkIndex,
+            totalChunks: totalChunks,
+            progress: (Number(chunkIndex) + 1) / Number(totalChunks) * 100, // Procent ukończenia
+            file: file.originalname
+        });
     });
-    //
-    // res.send(`<h1>Upload chunk ${chunkIndex} / ${totalChunks}</h1><p>File: ${file ? file.originalname : 'No file'}</p>`);
 });
 
 // Obsługuje błędy
@@ -55,7 +53,7 @@ router.use((err, req, res, next) => {
         return res.status(500).send(`Błąd Multera: ${err.message}`);
     }
     // Inny błąd serwera
-    res.status(500).send("Wystąpił błąd serwera.");
+    res.status(500).send("Wystąpił błąd serwera API.");
 });
 
 module.exports = router;
