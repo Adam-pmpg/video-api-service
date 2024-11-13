@@ -26,7 +26,13 @@ sudo docker exec -it {container-name} bash
 
 sudo docker exec -it node18_api-video_api-1 bash
 
+###Czyszczenie obrazów
+TIP:
+Found orphan containers ([node18_api-node18_api-1 node18_api-video_api-1 node18_api-app-1]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up.
+
+
 ##Endpoints
+
 ###POST | upload klipu video
 POST http://localhost:3000/upload
 
