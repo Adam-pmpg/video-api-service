@@ -1,0 +1,8 @@
+services:
+  video-api:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - ./chunks:/app/chunks
