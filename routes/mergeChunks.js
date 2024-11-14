@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
 
     // Pobierz listę fragmentów, posortowaną po nazwie
     let files = fs.readdirSync(chunksDir)
-        .filter(file => file.startsWith('chunk_') && file.endsWith('.mp4'))
+        .filter(file => (file.startsWith('chunk_') && (file.endsWith('.mp4') || file.endsWith('.wmv'))))
         .sort((a, b) => {
             const indexA = parseInt(a.split('_')[1].split('.')[0]);
             const indexB = parseInt(b.split('_')[1].split('.')[0]);
